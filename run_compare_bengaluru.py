@@ -8,19 +8,14 @@ import src.main_extb as main_extb
 import src.solver_compare as solver_compare
 
 
-# =========================
-# User-editable experiment plan
-# =========================
 N_PLAYERS = 1430
 OBJECTIVES = ["maximin", "utilitarian"]
 
-TIME_LIMIT = 180          # seconds for blocking MILP
-EPS_LIMIT = 1.0           # multiplicative least objection threshold
+TIME_LIMIT = 180          
+EPS_LIMIT = 1.0           
 ITER_LIMIT = 10
 K_CAPS = [None, 2, 5, 10, 20, 50, 100]
 
-# Optional coalition-cost threshold in multiplicative terms.
-# Keep this at 1.0 for now unless you want the "coalition formation cost" variant.
 MIN_BLOCK_GAIN_MULT = 1.0
 
 
