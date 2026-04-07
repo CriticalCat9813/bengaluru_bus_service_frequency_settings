@@ -11,16 +11,6 @@ from src.solver import get_basis, get_intersections
 
 
 def main(instance, modelname, **kwargs):
-    """
-    Unified solver for:
-      - baseline paper method: coalition_size_cap=None
-      - Extension B (k-core): coalition_size_cap = k
-      - optional coalition-cost threshold: min_block_gain_mult > 1.0
-
-    The implementation keeps the paper/code's multiplicative least objection
-    formulation and individual-rationality cuts, then modifies the blocking
-    problem by constraining sum_i y_i <= k when coalition_size_cap is given.
-    """
 
     N, J, K, A, B, V = instance
 
@@ -77,7 +67,7 @@ def main(instance, modelname, **kwargs):
     with open(f'{RELPATH}/results/solutions/{FILENAME}_{modelname}_{iterCount}.pkl', 'wb') as file:
         pickle.dump(out, file)
 
-    # Paper implementation adds singleton/individual-rationality constraints.
+    
     if kwargs.get('indRat', True):
         for i in N:
             s = m.addVar(vtype=gp.GRB.CONTINUOUS, lb=0, ub=gp.GRB.INFINITY, name=f's[{slackCount}]')
@@ -198,14 +188,6 @@ def main(instance, modelname, **kwargs):
 
 
 def get_blocking(instance, u_N, **kwargs):
-    """
-    Blocking coalition search under multiplicative least objection.
-
-    Extra kwargs:
-      coalition_size_cap: if given, impose sum_i y_i <= k.
-      min_block_gain_mult: require eps >= this threshold to count as a credible block.
-                           baseline paper implementation corresponds to 1.0.
-    """
     N, J, K, A, B, V = instance
 
     coalition_size_cap = kwargs.get("coalition_size_cap", None)
@@ -225,7 +207,6 @@ def get_blocking(instance, u_N, **kwargs):
     for i in N:
         weights[i] /= max_weight
 
-    # Heuristic starts from single-line blocks, filtered by k if applicable.
     for j in J:
         eps_j, S_j = 1.0, None
         A_j = A[0][j]
@@ -268,10 +249,8 @@ def get_blocking(instance, u_N, **kwargs):
         m_S.addGenConstrIndicator(m_S._y[i], True, m_S._eps * u_N[i] - m_S._u[i], gp.GRB.LESS_EQUAL, 0)
         m_S.addGenConstrIndicator(m_S._y[i], True, m_S._del - m_S._u[i], gp.GRB.LESS_EQUAL, -u_N[i])
 
-    # Paper implementation's additive floor for numerical stability.
     m_S.addConstr(m_S._del >= 1E-3)
 
-    # Optional coalition-formation-cost threshold in multiplicative terms.
     if min_block_gain_mult > 1.0:
         m_S.addConstr(m_S._eps >= min_block_gain_mult, name='min_gain_mult')
 
