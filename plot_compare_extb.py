@@ -1,10 +1,3 @@
-"""
-Plot simple comparison charts for baseline full-core vs k-core extension results.
-
-Expected input:
-  C:\game_heory\results\summary\extB_summary_bengaluru_india_n1430.csv
-"""
-
 from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
